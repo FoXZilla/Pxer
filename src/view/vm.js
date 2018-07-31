@@ -1,4 +1,4 @@
-afterLoad(function(){
+afterLoad(async function(){
     // 寻找插入点
     var elt =document.createElement('div');
     var insetElt=(
@@ -8,24 +8,23 @@ afterLoad(function(){
     );
     insetElt.insertBefore(elt,insetElt.firstChild);
 
+    // 国际化，加载默认语言
+    Vue.use(VueI18n);
+    var messages = {};
+    var fallbackLocale = 'en-US';
+    var locale = fallbackLocale;
+    var languageMap = await window.loadI18nResource('map');
+    messages[fallbackLocale] = await window.loadI18nResource(fallbackLocale);
+    var i18n = new VueI18n({locale, fallbackLocale, messages});
+
     // 运行Vue实例
     new Vue({render:ce=>ce({
+        i18n,
         template:PXER_TEMPLATE,
         data(){return {
             pxer:new PxerApp(),
             showAll:false,
-            state:'standby',//[standby|init|ready|page|works|finish|re-ready|stop|error]
-            stateMap:{
-                standby:'待命',
-                init  :'初始化',
-                ready :'就绪',
-                page  :'抓取页码中',
-                works :'抓取作品中',
-                finish:'完成',
-                're-ready':'再抓取就绪',
-                stop  :'用户手动停止',
-                error :'出错',
-            },
+            state:'standby',
             pxerVersion:window['PXER_VERSION'],
             showPxerFailWindow:false,
             runTimeTimestamp:0,
@@ -42,23 +41,18 @@ afterLoad(function(){
             errmsg:'',
         }},
         created(){
+            this.$nextTick(() => {
+                this.setLocale(
+                    document.documentElement.lang,
+                    window.navigator.language,
+                )
+            });
             window['PXER_VM'] =this;
             this.pxer.on('error',(err)=>{
                 this.errmsg =err;
             });
         },
         computed:{
-            pageType(){
-                var map ={
-                    'member_works'     :'作品列表页',
-                    'search'           :'检索页',
-                    'bookmark_works'   :'收藏列表页',
-                    'rank'             :'排行榜',
-                    'bookmark_new'     :'关注的新作品',
-                    'unknown'          :'未知',
-                };
-                return map[this.pxer.pageType];
-            },
             isRunning(){
                 var runState =['page','works'];
                 return runState.indexOf(this.state)!==-1;
@@ -229,6 +223,21 @@ afterLoad(function(){
             },
             formatTime(s){
                 return `${~~(s/60)}:${(s%60>=10)?s%60:'0'+s%60}`
+            },
+            setLocale(...languages) {
+                for (var language of languages) {
+                    var locale = languageMap[language];
+                    if (!locale) continue;
+                    if (locale in this.$i18n.messages) {
+                        this.$i18n.locale = locale;
+                    } else {
+                        window.loadI18nResource(locale).then((data) => {
+                            this.$i18n.setLocaleMessage(locale, data);
+                            this.$i18n.locale = locale;
+                        }, (error) => console.error(error));
+                    }
+                    break;
+                }
             },
         },
     })}).$mount(elt);

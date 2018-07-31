@@ -1,0 +1,44 @@
+{
+    "program_status": "程序状态",
+    "main_version": "主程序版本",
+    "current_status": "当前状态",
+    "time_used": "已运行时间",
+    "configurations": "配置信息",
+    "thread_count": "线程数",
+    "waiting_time": "等待时间",
+    "trial_count": "尝试次数",
+    "first_x_images": "仅抓取前 x 幅：",
+    "id_before_x": "仅抓取 id 为 x 之前的：",
+    "states": {
+        "standby": "待命",
+        "init": "初始化",
+        "loaded": "初始完毕",
+        "ready": "就绪",
+        "page": "抓取页码中",
+        "works": "抓取作品中",
+        "finish": "完成",
+        "re-ready": "再抓取就绪",
+        "stop": "用户手动停止",
+        "error": "出错"
+    },
+    "page_types": {
+        "bookmark_user": "用户列表页面",
+        "bookmark_works": "收藏列表页面",
+        "member_info": "用户主页",
+        "works_medium": "作品页面",
+        "works_manga": "多张作品页面",
+        "works_big": "作品大图页面",
+        "member_works": "用户作品列表页面",
+        "search": "检索页面",
+        "index": "首页",
+        "unknown": "未知页面"
+    },
+    "buttons": {
+        "load": "加载",
+        "run": "开始",
+        "stop": "停止",
+        "warn": "警告",
+        "apply": "应用",
+        "option": "选项"
+    }
+}

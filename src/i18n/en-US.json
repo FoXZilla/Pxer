@@ -1,0 +1,43 @@
+{
+    "program_status": "Program status",
+    "main_version": "Main version",
+    "current_status": "Current status",
+    "time_used": "Time used",
+    "configurations": "Configurations",
+    "thread_count": "Thread count",
+    "waiting_time": "Waiting time",
+    "trial_count": "Trial count",
+    "first_x_images": "Only first x images: ",
+    "id_before_x": "Images with id before x: ",
+    "states": {
+        "standby": "Standby",
+        "init": "Init",
+        "ready": "Ready",
+        "page": "Grabbing pages",
+        "works": "Grabbing works",
+        "finish": "Finished",
+        "re-ready": "Re-ready",
+        "stop": "Stopped",
+        "error": "Error encounted"
+    },
+    "page_types": {
+        "bookmark_user": "Bookmark user",
+        "bookmark_works": "Bookmark works",
+        "member_info": "Member info",
+        "works_medium": "Works medium",
+        "works_manga": "Works manga",
+        "works_big": "Works big",
+        "member_works": "Member works",
+        "search": "Search",
+        "index": "Index",
+        "unknown": "Unknown"
+    },
+    "buttons": {
+        "load": "Load",
+        "run": "Run",
+        "stop": "Stop",
+        "warn": "Warn",
+        "apply": "Apply",
+        "option": "Option"
+    }
+}

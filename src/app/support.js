@@ -49,6 +49,7 @@ const viewTpl       =/**/"src/view/template.html";//*/'';
 const viewStyles    =/**/"src/view/style.css";//*/[];
 const viewScripts   =/**/[
     "src/view/vue.dev.js",
+    "src/view/vue-i18n.js",
     "src/view/vm.js"
 ];//*/[];
 const afterRun      =/**/[

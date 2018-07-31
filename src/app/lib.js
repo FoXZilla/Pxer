@@ -48,6 +48,10 @@ window.parseURL =function(url=document.URL){
     }
     return data;
 };
+window.loadI18nResource = async function(lang) {
+    var request = await fetch(`${window['PXER_URL']}src/i18n/${lang}.json`);
+    return JSON.parse(await request.text());
+};
 window.createScript =function(url){
     if(!/^(https?:)?\/\//.test(url))url =window['PXER_URL']+url;
     var elt =document.createElement('script');

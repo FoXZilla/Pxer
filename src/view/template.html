@@ -9,29 +9,24 @@
         </div>
         <div class="pn-buttons">
             <button class="btn btn-outline-success"
-                    @click="load"
-                    v-show="state==='standby'&&showLoadBtn"
-            >Load</button>
+                    v-t="'buttons.load'" @click="load"
+                    v-show="state==='standby'&&showLoadBtn"/>
             <button class="btn btn-outline-primary"
-                    @click="run"
-                    v-show="state==='ready' || (state==='re-ready'&&pxer.taskList.length)"
-            >Run</button>
+                    v-t="'buttons.run'" @click="run"
+                    v-show="state==='ready' || (state==='re-ready'&&pxer.taskList.length)"/>
             <button class="btn btn-outline-danger"
-                    @click="stop"
-                    v-show="isRunning"
-            >Stop</button>
-            <div id="wave"	
-                 v-show="state==='init'"	
-            >
+                    v-t="'buttons.stop'" @click="stop"
+                    v-show="isRunning"/>
+            <div id="wave" v-show="state==='init'">
                 <span class="dot"></span>
                 <span class="dot"></span>
                 <span class="dot"></span>
             </div>
             <template v-if="showFailTaskList.length">
-                <button class="btn btn-outline-warning"
-                        @click="showPxerFailWindow=!showPxerFailWindow"
-                >Warn</button><span class="pnb-warn-number"
-                                    v-text="showFailTaskList.length>99?99:showFailTaskList.length"></span>
+                <button class="btn btn-outline-warning" v-t="'buttons.warn'"
+                        @click="showPxerFailWindow=!showPxerFailWindow"/>
+                <span class="pnb-warn-number"
+                      v-text="showFailTaskList.length>99?99:showFailTaskList.length"/>
             </template>
         </div>
     </div>
@@ -60,47 +55,47 @@
 
     <div class="pxer-task-option form-inline" v-show="showAll ||(showTaskOption&&state==='ready')">
         <div class="form-group">
-            <label class="pcf-title">仅抓取前x副：</label>
+            <label class="pcf-title" v-t="'first_x_images'"/>
             <input type="number" class="form-control" v-model="taskOption.limit" />
         </div>
         <div class="form-group">
-            <label class="pcf-title">仅抓取id为x之前的：</label>
+            <label class="pcf-title" v-t="'id_before_x'"/>
             <input type="number" class="form-control" v-model="taskOption.stopId" />
         </div>
         <div class="form-group ptp-buttons">
-            <button class="btn btn-outline-success" @click="useTaskOption">Use it</button>
+            <button class="btn btn-outline-success" @click="useTaskOption" v-t="'buttons.apply'"/>
         </div>
     </div>
 
 
     <div class="pxer-info" v-show="showAll ||isRunning||['ready','re-ready'].indexOf(state)!==-1">
         <div class="pi-item">
-            <div class="pii-title">程序状态</div>
+            <div class="pii-title" v-t="'program_status'" />
             <table class="table">
                 <tr>
-                    <td>主程序版本：</td>
-                    <td v-text="pxerVersion"></td>
+                    <td v-t="'main_version'" />
+                    <td v-text="pxerVersion" />
                 </tr>
                 <tr>
-                    <td>当前状态：</td>
-                    <td v-text="stateMap[state]"></td>
+                    <td v-t="'current_status'" />
+                    <td v-t="'states.' + state" />
                 </tr>
                 <tr>
-                    <td>已运行时间：</td>
-                    <td v-text="formatTime(runTimeTimestamp)"></td>
+                    <td v-t="'time_used'" />
+                    <td v-text="formatTime(runTimeTimestamp)" />
                 </tr>
             </table>
         </div>
         <div class="pi-item">
-            <div class="pii-title">配置信息</div>
+            <div class="pii-title" v-t="'configurations'" />
             <table class="table"><tr>
-                    <td>线程数：</td>
+                    <td v-t="'thread_count'" />
                     <td><input v-model="pxer.ptmConfig.thread" class="form-control" type="text" /></td>
                 </tr><tr>
-                    <td>等待时间：</td>
+                    <td v-t="'waiting_time'" />
                     <td><input v-model="pxer.ptmConfig.timeout" class="form-control" type="text" /></td>
                 </tr><tr>
-                    <td>重试次数：</td>
+                    <td v-t="'trial_count'" />
                     <td><input v-model="pxer.ptmConfig.retry" class="form-control" type="text" /></td>
             </tr></table>
         </div>
@@ -109,18 +104,18 @@
             <table class="table">
                 <tr>
                     <td>页面类型：</td>
-                    <td v-text="pageType"></td>
+                    <td v-text="$t('page_types.' + pxer.pageType)"></td>
                 </tr>
                 <tr>
                     <td>下载数量：</td>
                     <td v-text="worksNum"></td>
                 </tr>
                 <tr>
-                    <td colspan="2" class="text-right"><button
-                            :disabled="state!=='ready'"
+                    <td colspan="2" class="text-right">
+                        <button :disabled="state!=='ready'"
                             @click="showTaskOption=!showTaskOption"
-                            class="btn btn-outline-info"
-                    >Option</button></td>
+                            class="btn btn-outline-info" v-t="'buttons.option'"/>
+                    </td>
                 </tr>
             </table>
         </div>

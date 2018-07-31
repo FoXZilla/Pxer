@@ -10,6 +10,7 @@ const renderData ={
         viewStyles  :PxerUtility.path2URL('../dist/view/style.css'),
         viewScripts :[
             '../dist/view/vue.min.js',
+            '../dist/view/vue-i18n.min.js',
             '../dist/view/vm.js',
         ].map(path=>PxerUtility.path2URL(path)),
         afterRun    :PxerUtility.path2URL('../dist/run.js'),
@@ -28,6 +29,7 @@ const renderData ={
         viewStyles  :PxerUtility.path2URL('../src/view/style.css'),
         viewScripts :[
             '../src/view/vue.dev.js',
+            '../src/view/vue-i18n.js',
             '../src/view/vm.js',
         ].map(path=>PxerUtility.path2URL(path)),
         afterRun    :PxerUtility.getAllFile('../src/run/').map(path=>PxerUtility.path2URL(path)),
