@@ -1,0 +1,29 @@
+{
+  "name": "pxer",
+  "version": "9.0.0-alpha",
+  "description": "Pixiv crawler",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "repository": "https://github.com/FoxZilla/Pxer.git",
+  "author": "eternal-flame-AD, pea3nut",
+  "license": "MIT",
+  "private": false,
+  "scripts": {
+    "tests": "mocha -r ts-node/register tests/**/*.ts"
+  },
+  "dependencies": {
+    "@types/node": "^10.12.5",
+    "@types/request": "^2.48.1",
+    "request": "^2.88.0",
+    "requirejs": "^2.3.6",
+    "ts-node": "^7.0.1",
+    "typescript": "^3.1.6"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.1.7",
+    "@types/mocha": "^5.2.5",
+    "chai": "^4.2.0",
+    "gulp": "^3.9.1",
+    "mocha": "^5.2.0"
+  }
+}

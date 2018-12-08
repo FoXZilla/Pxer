@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+      "strict": true,
+      "lib": ["esnext"],
+      "types": ["node","request"],
+      "module": "umd",
+      "target": "es6",
+      "sourceMap": true,
+      "declaration": true
+    },
+    "exclude": [
+      "node_modules",
+      "tests",
+    ]
+}
