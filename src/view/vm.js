@@ -1,5 +1,26 @@
 afterLoad(function(){
     // 寻找插入点
+    let pxer_app = new PxerApp();
+    let pxer_app_delayed_syncer = {
+        pageType: pxer_app.pageType,
+        taskOption: pxer_app.taskOption,
+        worksNum: 0,
+        completedTaskCount: 0,
+        failCount: 0,
+        ppConfig: pxer_app.ppConfig,
+        pfConfig: pxer_app.pfConfig,
+        ptmConfig: pxer_app.ptmConfig,
+    };
+
+    setInterval(function() {
+        pxer_app_delayed_syncer.completedTaskCount = pxer_app.taskList.filter(pr=>pr.completed).length;
+        pxer_app_delayed_syncer.failCount = pxer_app.failList.length;
+    }, 500);
+    setInterval(function() {
+        pxer_app_delayed_syncer.worksNum = pxer_app.worksNum;
+    }, 100);
+
+    let pxer_analytics = new PxerAnalytics();
     var elt =document.createElement('div');
     var insetElt=(
         document.getElementById('pxer-app')
@@ -13,7 +34,7 @@ afterLoad(function(){
     new Vue({render:ce=>ce({
         template:PXER_TEMPLATE,
         data(){return {
-            pxer:new PxerApp(),
+            pxer: pxer_app_delayed_syncer,
             showAll:false,
             state:'standby',//[standby|init|ready|page|works|finish|re-ready|stop|error]
             stateMap:{
@@ -41,26 +62,25 @@ afterLoad(function(){
             },
             showLoadBtn:true,
             errmsg:'',
-            analytics:new PxerAnalytics(),
         }},
         created(){
             window['PXER_VM'] =this;
-            window['PXER_ANALYTICS'] =this.analytics;
-            this.analytics.postData("pxer.app.created", {});
-            this.pxer.on('error',(err)=>{
+            window['PXER_ANALYTICS'] =pxer_analytics;
+            pxer_analytics.postData("pxer.app.created", {});
+            pxer_app.on('error',(err)=>{
                 this.errmsg =err;
             });
-            this.pxer.on('finishWorksTask',(result) =>{
-                this.analytics.postData("pxer.app.finish", {
+            pxer_app.on('finishWorksTask',(result) =>{
+                pxer_analytics.postData("pxer.app.finish", {
                     result_count:result.length,
                     ptm_config:this.pxer.ptmConfig,
-                    task_option:this.pxer.taskOption,
-                    error_count:this.pxer.failList.length,
+                    task_option:pxer_app.taskOption,
+                    error_count:pxer_app.failList.length,
                 });
             })
         },
         mounted(){
-            var getResultList=()=>[].concat.apply([], this.pxer.resultSet.map((res)=>res.tagList));
+            var getResultList=()=>[].concat.apply([], pxer_app.resultSet.map((res)=>res.tagList));
             new AutoSuggestControl("no_tag_any", getResultList);
             new AutoSuggestControl("no_tag_every", getResultList);
             new AutoSuggestControl("has_tag_some", getResultList);
@@ -93,12 +113,12 @@ afterLoad(function(){
             },
             finishCount(){
                 if(this.state==='page'){
-                    return this.pxer.taskList.filter(pr=>pr.completed).length;
+                    return this.pxer.completedTaskCount;
                 }else if(this.state==='works'){
                     return (
-                        this.pxer.taskList.filter(pr=>pr.completed).length
+                        this.pxer.completedTaskCount
                         +~~(this.worksNum/20)
-                        +this.pxer.failList.length
+                        +this.pxer.failCount
                     );
                 }else{
                     return -1;
@@ -129,7 +149,7 @@ afterLoad(function(){
                     return this.pxer.pfConfig.no_tag_any.join(' ');
                 },
                 set(value){
-                    this.pxer.pfConfig.no_tag_any =value.split(' ');
+                    this.pxer.pfConfig.no_tag_any = value ? value.split(' ') : [];
                 },
             },
             no_tag_every:{
@@ -137,7 +157,7 @@ afterLoad(function(){
                     return this.pxer.pfConfig.no_tag_every.join(' ');
                 },
                 set(value){
-                    this.pxer.pfConfig.no_tag_every =value.split(' ');
+                    this.pxer.pfConfig.no_tag_every = value ? value.split(' ') : [];
                 },
             },
             has_tag_some:{
@@ -145,7 +165,7 @@ afterLoad(function(){
                     return this.pxer.pfConfig.has_tag_some.join(' ');
                 },
                 set(value){
-                    this.pxer.pfConfig.has_tag_some =value.split(' ');
+                    this.pxer.pfConfig.has_tag_some = value ? value.split(' ') : [];
                 },
             },
             has_tag_every:{
@@ -153,11 +173,11 @@ afterLoad(function(){
                     return this.pxer.pfConfig.has_tag_every.join(' ');
                 },
                 set(value){
-                    this.pxer.pfConfig.has_tag_every =value.split(' ');
+                    this.pxer.pfConfig.has_tag_every = value ? value.split(' ') : [];
                 },
             },
             showFailTaskList(){
-                return this.pxer.failList
+                return pxer_app.failList
                     .filter((pfi)=>{
                         return this.tryFailWroksList.indexOf(pfi)===-1;
                     })
@@ -181,66 +201,66 @@ afterLoad(function(){
                 this.state='init';
                 if(this.pxer.pageType==='works_medium'){
                     this.showLoadBtn=false;
-                    this.pxer.one('finishWorksTask',()=>{
+                    pxer_app.one('finishWorksTask',()=>{
                         this.showLoadBtn=true;
                         this.state='standby';
                     });
-                    this.pxer.getThis();
+                    pxer_app.getThis();
                 }else{
-                    this.pxer.init().then(()=>this.state='ready');
-                    this.pxer.on('finishWorksTask',()=>{
+                    pxer_app.init().then(()=>this.state='ready');
+                    pxer_app.on('finishWorksTask',()=>{
                         window.blinkTitle();
                     });
                 }
-                this.analytics.postData("pxer.app.load", {
+                pxer_analytics.postData("pxer.app.load", {
                     page_type:this.pxer.pageType,
                 });
             },
             run(){
-                this.analytics.postData("pxer.app.start", {
+                pxer_analytics.postData("pxer.app.start", {
                     ptm_config:this.pxer.ptmConfig,
                     task_option:this.pxer.taskOption,
                     vm_state:this.state,
                 });
                 if(this.state==='ready'){
                     this.state='page';
-                    this.pxer.initPageTask();
-                    this.pxer.one('finishPageTask',()=>{
+                    pxer_app.initPageTask();
+                    pxer_app.one('finishPageTask',()=>{
                         this.state='works';
-                        this.pxer.switchPage2Works();
-                        this.pxer.executeWroksTask();
+                        pxer_app.switchPage2Works();
+                        pxer_app.executeWroksTask();
                     });
-                    this.pxer.one('finishWorksTask',()=>{
+                    pxer_app.one('finishWorksTask',()=>{
                         this.state='finish';
                     });
-                    this.pxer.executePageTask();
+                    pxer_app.executePageTask();
                 }else if(this.state==='re-ready'){
                     this.state='works';
-                    this.pxer.one('finishWorksTask',()=>{
+                    pxer_app.one('finishWorksTask',()=>{
                         this.state='finish';
                     });
-                    this.pxer.executeFailWroks(this.tryFailWroksList);
+                    pxer_app.executeFailWroks(this.tryFailWroksList);
                     this.tryFailWroksList=[];
                 }
             },
             stop(){
                 this.state='stop';
-                this.pxer.stop();
-                this.analytics.postData("pxer.app.halt", {
+                pxer_app.stop();
+                pxer_analytics.postData("pxer.app.halt", {
                     task_count:this.taskCount,
                     finish_count:this.finishCount,
                 });
             },
             count(){
-                this.taskInfo =this.pxer.getWorksInfo()
+                this.taskInfo =pxer_app.getWorksInfo()
             },
             printWorks(){
-                this.pxer.printWorks();
+                pxer_app.printWorks();
                 var sanitizedpfConfig = {};
                 for (let key in this.pxer.pfConfig) {
                     sanitizedpfConfig[key] = this.pxer.pfConfig[key].length?this.pxer.pfConfig[key].length:this.pxer.pfConfig[key];
                 }
-                this.analytics.postData("pxer.app.print", {
+                pxer_analytics.postData("pxer.app.print", {
                     pp_config:this.pxer.ppConfig,
                     pf_config:sanitizedpfConfig,
                     task_option:this.pxer.taskOption,
@@ -248,7 +268,7 @@ afterLoad(function(){
             },
             useTaskOption(){
                 this.showTaskOption=false;
-                this.analytics.postData("pxer.app.taskoption", {
+                pxer_analytics.postData("pxer.app.taskoption", {
                     task_option: this.taskOption,
                 });
                 Object.assign(this.pxer.taskOption ,this.taskOption);
@@ -275,7 +295,7 @@ afterLoad(function(){
             },
             tryCheckedPfi(){
                 this.tryFailWroksList.push(...this.checkedFailWorksList);
-                this.analytics.postData("pxer.app.reready", {
+                pxer_analytics.postData("pxer.app.reready", {
                     checked_works:this.checkedFailWorksList,
                 });
                 this.checkedFailWorksList=[];
