@@ -16,20 +16,20 @@ window.setDefalut =function(obj ,key ,val){
 window.blinkTitle =function(addMsg ,spaceMsg){
     var addMsg =addMsg ||'[完成] ';
     var spaceMsg =spaceMsg ||'[　　] ';
+    document.title = spaceMsg + document.title;
+    var counter =1;
     var timer =setInterval(()=>{
-        if(document.title.indexOf(addMsg) !==-1){
-            document.title =document.title.replace(addMsg ,spaceMsg);
-        }else if(document.title.indexOf(spaceMsg) !==-1){
-            document.title =document.title.replace(spaceMsg ,addMsg);
-        }else{
-            document.title =addMsg+document.title;
+        counter ^=1;
+        if (counter) {
+            document.title = document.title.replace(addMsg, spaceMsg);
+        } else {
+            document.title = document.title.replace(spaceMsg, addMsg);
         };
-    },500);
-    window.addEventListener('mousemove' ,function _self(){
-        window.addEventListener('mousemove' ,_self);
+    }, 500);
+    window.addEventListener("mousemove", () => {
         clearInterval(timer);
-        document.title =document.title.replace(spaceMsg ,"").replace(addMsg ,"");
-    });
+        document.title = document.title.replace(spaceMsg, "").replace(addMsg, "");
+    }, {once: true})
 };
 window.parseURL =function(url=document.URL){
     var arr  =url.match(/^(?:(https?)\:)?\/\/([\w\_\.]+)((?:\/[^\/?]*)*)\/?(?:\?(.+))?$/);
